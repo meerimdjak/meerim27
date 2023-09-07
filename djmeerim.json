@@ -1,0 +1,334 @@
+{
+	"info": {
+		"_postman_id": "37368917-2c76-47ee-a838-f1b58e12beea",
+		"name": "EtoE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27211234"
+	},
+	"item": [
+		{
+			"name": "Student sign-up",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"student2703@gmail.com\",\n  \"name\": \"Jon Snow\",\n  \"password\": \"qwerty11\",\n  \"group\": \"AAA\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://ask-stage.portnov.com/api/v1/sign-up",
+					"protocol": "http",
+					"host": [
+						"ask-stage",
+						"portnov",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"sign-up"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User data(activation code)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.environment.set(\"studentID\",jsonData[0].id);",
+							"pm.environment.set(\"activationCode\",jsonData[0].activationCode);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/users?_where=(email,eq,student2703@gmail.com)",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users"
+					],
+					"query": [
+						{
+							"key": "_where",
+							"value": "(email,eq,student2703@gmail.com)"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Activate student account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Validate message\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql(\"User was activated\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/activate/{{studentID}}/{{activationCode}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"activate",
+						"{{studentID}}",
+						"{{activationCode}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Student sign-in",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var jsonData = pm.response.json();",
+							"pm.environment.set(\"studentToken\", jsonData.token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"student2703@gmail.com\",\n  \"password\": \"qwerty11\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/sign-in",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"sign-in"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Student change-name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Validate the message\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql(\"User name was updated\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{studentToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"newName\": \"Kitty Lama\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/settings/change-name",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"settings",
+						"change-name"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Student New name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"student2703@gmail.com\",\n  \"password\": \"qwerty11\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/sign-in",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"sign-in"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Teacher data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var jsonData = pm.response.json();",
+							"pm.environment.set(\"teacherToken\", jsonData.token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"melek2703@gmail.com\",\n  \"password\": \"qwerty22\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/sign-in",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"sign-in"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete student",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{teacherToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/users/{{studentID}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"users",
+						"{{studentID}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
